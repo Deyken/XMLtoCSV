@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2016/11/07 06:54:17.000.174,=\\fs-unisun01\IT Users\HENDRIK.POTGIETER\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2016/12/15 13:04:49.000.408,=\\fs-unisun01\IT Users\HENDRIK.POTGIETER\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2016/12/15 13:05:00.000.499,=\\fs-unisun01\IT Users\HENDRIK.POTGIETER\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2017/01/13 10:54:13.000.930,=\\fs-unisun01\IT Users\HENDRIK.POTGIETER\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2018/10/09 13:01:20.000.420,\\fs-unisun01\IT Users\HENDRIK.POTGIETER\Embarcadero\Studio\Projects\Project3.dproj=\\fs-unisun01\IT Users\HENDRIK.POTGIETER\Embarcadero\Studio\Projects\XMLtoCSV.dproj</Transaction>
+    <Transaction>2018/10/09 13:01:59.000.420,\\fs-unisun01\IT Users\HENDRIK.POTGIETER\Embarcadero\Studio\Projects\XMLtoCSV.dproj=\\fs-unisun01\IT Users\Hendrik.Potgieter\01- APPLICATION CODE\03 - DELPHI\02 - DELPHI 10 SEATTLE\Console XMLtoCSV\XMLtoCSV.dproj</Transaction>
+  </Transactions>
+</BorlandProject>

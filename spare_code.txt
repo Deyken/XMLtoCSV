@@ -1,0 +1,177 @@
+function ParseXMLData(filename : String; var output_file : String): WideString;
+var
+  XML1 : TXMLDocument;
+  T1, T2, T3, T4 : Integer;
+  i, j, k, l, aa, bb : INteger;
+  Headings : TStringList;
+  Data : TStringList;
+  Output : TStringList;
+  N1, N2, N3, N4 : IXMLNode;
+  Delim : String;
+  Idx : Integer;
+  strHeading, strDataRow : WideString;
+  Hr, Mn, Sec, mSec : Word;
+  StartTime, EndTime : TTime;
+  str1, str2, str3, str4 : WideString;
+begin
+  try
+    CoInitialize(nil);
+    Writeln('STARTING PARSING ' + XML1.Filename + '...');
+    Sleep(2000);
+    StartTime := Now;
+    Headings := TStringlist.Create;
+    Headings.Duplicates := dupIgnore;
+    Headings.Sorted := False;
+    Headings.CaseSensitive := True;
+    Data := TStringlist.Create;
+    Output := TStringlist.Create;
+    //TODO - GET USER/COMMAND LINE NIPUT FOR THE DELIMITR CHOICE
+    Delim := '|';  //NOTE: Hard coded for now
+    strHeading := '';
+    strDataRow := '';
+    str1 := '';
+    str2 := '';
+    str3 := '';
+    str4 := '';
+    Idx := -1; //set to -1 default, because if an index is returned from TStringlist.Find() then it will not be -1
+
+    //Create the XML Document and load the given File from the file_name parameters:
+    try
+      Writeln('Creating the XML Document in memory...');
+      XML1 := TXMLDocument.Create(nil);
+      XML1.LoadFromFile(filename);
+      Writeln('XML Document created. Preparing to start parsing...');
+
+    except
+      on E:Exception do
+        begin
+          Writeln('ERROR: Could not create the XML File in memory because ' + E.Message);
+          Sleep(5000);
+        end;
+    end;
+
+    //LOOP THROUGH XML File
+    if XML1.Active then
+      begin
+        try
+          Writeln('XML Document ACTIVE. Now starting...');
+          Sleep(5000);
+          //Writeln('XML Document has ' + IntToStr(XML1.DOMDocument.childNodes.length) + ' Child Nodes!');
+
+
+          for T1 := 0 to XML1.ChildNodes.Count - 1 do
+            begin
+              N1 := XML1.ChildNodes[T1];
+              Writeln(XML1.ChildNodes[T1].NodeName + ' ' + IntToStr(T1));
+              for i := 0 to N1.AttributeNodes.Count - 1 do
+                begin
+                  if Headings.Find(N1.AttributeNodes[i].NodeName, Idx) then
+                    Writeln('Tier 1 Attribute: ' + N1.AttributeNodes[i].NodeName)
+                  else
+                    Headings.Add(N1.AttributeNodes[i].NodeName);
+
+                  str1 := str1 + N1.AttributeNodes[i].Text + Delim;
+                end;
+
+
+
+              for T2 := 0 to XML1.ChildNodes[T1].ChildNodes.Count - 1 do
+                begin
+                  N2 := XML1.ChildNodes[T1].ChildNodes[T2];
+                  Writeln(N2.NodeName + ' ' + IntToStr(T2));
+                  for j := 0 to N2.AttributeNodes.Count - 1 do
+                    begin
+                      if Headings.Find(N2.AttributeNodes[j].NodeName, Idx) then
+                        Writeln('Found Heading ' + N2.AttributeNodes[j].NodeName + ' in the list already!')
+                      else begin
+                        Headings.Add(N2.AttributeNodes[j].NodeName);
+                      end;
+
+                      str2 := str2 + N2.AttributeNodes[j].Text + Delim;
+                    end;
+
+
+                  for T3 := 0 to XML1.ChildNodes[T1].ChildNodes[T2].ChildNodes.Count - 1 do
+                    begin
+                      N3 := XML1.ChildNodes[T1].ChildNodes[T2].ChildNodes[T3];
+                      Writeln(N3.NodeName + ' ' + IntToStr(T3));
+                      for k := 0 to N3.AttributeNodes.Count - 1 do
+                        begin
+                          if Headings.Find(N3.AttributeNodes[k].NodeName, Idx) then
+                            //
+                          else
+                            Headings.Add(N3.AttributeNodes[k].NodeName);
+
+                          str3 := str3 + N3.AttributeNodes[k].Text + Delim;
+                        end;
+
+
+
+                      for T4 := 0 to XML1.ChildNodes[T1].ChildNodes[T2].ChildNodes[T3].ChildNodes.Count - 1 do
+                        begin
+                          N4 := XML1.ChildNodes[T1].ChildNodes[T2].ChildNodes[T3].ChildNodes[T4];
+                          for l := 0 to N4.AttributeNodes.Count - 1 do
+                            begin
+                              if Headings.Find(N4.AttributeNodes[l].NodeName, Idx) then
+                                //
+                              else
+                                Headings.Add(N4.AttributeNodes[l].NodeName);
+
+                              str4 := str4 + N4.AttributeNodes[l].Text + Delim;
+                            end;
+
+                          //Add DataRow to collection
+                          Data.Add(str1 + str2 + str3 + str4);
+                          strDataRow := '';
+                          str2 := '';
+                          str3 := '';
+                          str4 := '';
+                        end;
+                    end;
+                end;
+            end;
+
+
+
+        except
+          on E:Exception do
+            begin
+              Writeln('PARSING ERROR: ' + E.Message);
+              Sleep(5000);
+            end;
+        end;
+      end;
+
+  //CLEAR THE XML Document from MEMORY
+  XML1.Destroy;
+
+  //Build Heading string after attempting to remove all duplicates
+  for aa := 0 to Headings.Count - 1 do
+    begin
+      strHeading := strHeading + Headings[aa] + Delim;
+    end;
+  Output.Add(strHeading);
+
+  //Build Data Rows
+  for bb := 0 to Data.Count - 1 do
+    begin
+      Output.Add(Data[bb]);
+    end;
+
+
+  finally
+    //Create the OUTPUT CSV File (with relevant directories, as required) here:
+    if not DirectoryExists('C:\CSVOutput') then
+      CreateDir('C:\CSVOutput');
+
+    Output.SaveToFile('C:\CSVOutput\' + ExtractFileName(XML1.FileName) + '.csv');
+    Output_file := 'C:\CSVOutput\' + ExtractFileName(XML1.FileName) + '.csv';
+    Headings.Free;
+    Data.Free;
+    Output.Free;
+    CoUninitialize;
+    EndTime := Now;
+    DecodeTime(EndTime - StartTime, Hr, Mn, Sec, mSec);
+    Result := 'XML File parsing completed in ' + IntToStr(Hr) + ':' + IntToStr(Mn) + ':' + IntToStr(Sec) + '.' + IntToStr(mSec);
+  end;
+end;
